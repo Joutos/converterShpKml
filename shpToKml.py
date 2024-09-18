@@ -16,19 +16,14 @@ def read_projection(prj_fname):
 
 def create_kml_root():
     doc = KML.kml()
-    document = KML.Document()   
+    document = KML.Document()
     doc.append(document)
-    return document
+    return doc, document
 
 
 def main(args):
-    if len(args) < 2:
-        print("Usage: script.py <shapefile> [<projection file>] [output path]")
-        return 1
-
     shp_fname = args[1]
-    prj_fname = args[2] if len(args) > 2 else None
-    output_path = args[3]
+    prj_fname = args[2]
 
     if not os.path.isfile(shp_fname):
         print(f"Shapefile {shp_fname} not found.")
@@ -45,27 +40,39 @@ def main(args):
         projection = read_projection(prj_fname)
         print("Projection info:", projection)
 
-    document = create_kml_root()
+    for idx, shapeRec in enumerate(reader.shapeRecords()):
+        doc, document = create_kml_root()
 
-    for shapeRec in reader.shapeRecords():
         name = ''
         for i in range(len(shapeRec.record)):
             name += f'{shapeRec.record[i]}|'
-        
+
         points = shapeRec.shape.points
 
-        coordinates = ','.join([f'{p[0]},{p[1]}' for p in points])
+        if points[0] != points[-1]:
+            points.append(points[0])
+
+        coordinates = ' '.join([f'{p[0]},{p[1]}' for p in points])
 
         placemark = KML.Placemark(
             KML.name(name),
-            KML.LineString(
-                KML.coordinates(coordinates)
+            KML.MultiGeometry(
+                KML.Polygon(
+                    KML.outerBoundaryIs(
+                        KML.LinearRing(
+                            KML.coordinates(coordinates)
+                        )
+                    )
+                )
             )
         )
+
         document.append(placemark)
 
-    with open(output_path, 'wb') as f:
-        f.write(etree.tostring(KML.kml(document), pretty_print=True))
+        with open(f'{shapeRec.record[2]}.kml', 'wb') as f:
+            f.write(etree.tostring(doc, pretty_print=True))
+
+        print(f"KML file saved as {shapeRec.record[2]}.kml")
 
     return 0
 
