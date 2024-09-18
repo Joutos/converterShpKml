@@ -22,9 +22,10 @@ def create_kml_root():
 
 
 def main(args):
-    shp_fname = args[1]
-    prj_fname = args[2]
-
+    shp_fname  = args[1]
+    prj_fname  = args[2]
+    output_dir = args[3]
+    
     if not os.path.isfile(shp_fname):
         print(f"Shapefile {shp_fname} not found.")
         return 1
@@ -69,10 +70,10 @@ def main(args):
 
         document.append(placemark)
 
-        with open(f'{shapeRec.record[2]}.kml', 'wb') as f:
+        with open(f'{output_dir}/{shapeRec.record[2]}.kml', 'wb') as f:
             f.write(etree.tostring(doc, pretty_print=True))
 
-        print(f"KML file saved as {shapeRec.record[2]}.kml")
+        print(f"KML file saved in {output_dir}\{shapeRec.record[2]}.kml")
 
     return 0
 
