@@ -25,6 +25,7 @@ def main(args):
     shp_fname  = args[1]
     prj_fname  = args[2]
     output_dir = args[3]
+    municipio_busca = args[4]
     
     if not os.path.isfile(shp_fname):
         print(f"Shapefile {shp_fname} not found.")
@@ -44,6 +45,9 @@ def main(args):
     for idx, shapeRec in enumerate(reader.shapeRecords()):
         doc, document = create_kml_root()
 
+        if(shapeRec.record.municipio != municipio_busca):
+            continue
+        
         name = ''
         for i in range(len(shapeRec.record)):
             name += f'{shapeRec.record[i]}|'
@@ -73,7 +77,7 @@ def main(args):
         with open(f'{output_dir}/{shapeRec.record[2]}.kml', 'wb') as f:
             f.write(etree.tostring(doc, pretty_print=True))
 
-        print(f"KML file saved in {output_dir}\{shapeRec.record[2]}.kml")
+        # print(f"KML file saved in {output_dir}\\{shapeRec.record[2]}.kml")
 
     return 0
 
