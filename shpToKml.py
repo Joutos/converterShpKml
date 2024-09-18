@@ -23,11 +23,12 @@ def create_kml_root():
 
 def main(args):
     if len(args) < 2:
-        print("Usage: script.py <shapefile> [<projection file>]")
+        print("Usage: script.py <shapefile> [<projection file>] [output path]")
         return 1
 
     shp_fname = args[1]
     prj_fname = args[2] if len(args) > 2 else None
+    output_path = args[3]
 
     if not os.path.isfile(shp_fname):
         print(f"Shapefile {shp_fname} not found.")
@@ -47,7 +48,10 @@ def main(args):
     document = create_kml_root()
 
     for shapeRec in reader.shapeRecords():
-        name = shapeRec.record[1]
+        name = ''
+        for i in range(len(shapeRec.record)):
+            name += f'{shapeRec.record[i]}|'
+        
         points = shapeRec.shape.points
 
         coordinates = ','.join([f'{p[0]},{p[1]}' for p in points])
@@ -60,7 +64,7 @@ def main(args):
         )
         document.append(placemark)
 
-    with open('saida.kml', 'wb') as f:
+    with open(output_path, 'wb') as f:
         f.write(etree.tostring(KML.kml(document), pretty_print=True))
 
     return 0
