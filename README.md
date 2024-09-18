@@ -1,6 +1,6 @@
 # Shapefile to KML Converter
 
-Este projeto é um conversor de arquivos Shapefile (.shp) para KML (.kml) usando Python. O código lê um arquivo Shapefile e converte suas geometrias em um formato KML, que pode ser utilizado em aplicações como Google Earth.
+Este projeto é um conversor de arquivos Shapefile (.shp) para KML (.kml) usando Python, visado principalmente nas bases criadas do SICAR. O código lê um arquivo Shapefile e converte suas geometrias em um formato KML, que pode ser utilizado em aplicações como Google Earth.
 
 ## Funcionalidades
 
